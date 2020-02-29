@@ -1,4 +1,4 @@
-# mxg-msm
+# hrm-web
 
 ## Project setup
 ```
