@@ -17,10 +17,36 @@
 </template>
 
 <script>
+
+import {logout} from '@/api/login/login.js'
+
   export default {
     methods: {
       handleCommand(command) {
-        this.$message('click on item ' + command);
+          switch(command){
+              case 'a' : 
+                this.$message('修改密码');
+                break;
+              case 'b' : 
+                logout(localStorage.getItem('hrm-token')).then(response => {
+                    const resp = response.data;
+                    console.log(response)
+                    if(resp.flag){
+                        //退出成功
+                        //清除本地缓存
+                        localStorage.removeItem('hrm-token');
+                        localStorage.removeItem('hrm-user');
+                        this.$router.push('/login')
+                    } else {
+                        this.$message({
+                            message: '退出失败',
+                            type: 'warning'
+                        });
+                    }
+                })
+                break;
+          }
+        
       }
     }
   }

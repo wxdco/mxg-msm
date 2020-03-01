@@ -43,14 +43,12 @@
           if (valid) {
             //
             login(this.form.username,this.form.password).then(response => {
-                  console.log(response.data)
                   const resp = response.data;
                   const flag = response.data.flag;
                   if(flag){
                     getUser(resp.data.token).then(response => {
-                      const responseUser = response.data;
-                      localStorage.setItem('mxg-msm-user', JSON.stringify(responseUser));
-                      localStorage.setItem('mxg-msm-token', resp.data.token)
+                      localStorage.setItem('hrm-user', JSON.stringify(response.data.data));
+                      localStorage.setItem('hrm-token', resp.data.token)
                       this.$router.push('/')
                     })
                   } else {

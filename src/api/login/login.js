@@ -18,3 +18,11 @@ export function getUser(token){
         method: 'get'
     })
 }
+
+export function logout(token){
+    return request({
+        url: `/user/logout`,
+        method: 'post',
+        data:{ token }
+    })
+}
