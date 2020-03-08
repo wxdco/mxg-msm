@@ -26,3 +26,23 @@ export function logout(token){
         data:{ token }
     })
 }
+
+export function checkUser(username){
+    return request({
+        url: `/user/exist`,
+        params: {
+            loginName: username
+        },
+        method: 'get',
+    })
+}
+
+export function getEmailCode(email){
+    return request({
+        url: `/user/emailCode`,
+        params: {
+            email
+        },
+        method: 'get',
+    })
+}
