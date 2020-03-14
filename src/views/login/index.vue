@@ -20,7 +20,7 @@
           :close-on-click-modal="false">
             <el-form :model="registerForm" ref="registerForm" :rules="registerRules">
               <el-form-item class="item" label="账号" prop="username">
-                  <el-input v-model="registerForm.username" placeholder="请输入登录账号名" ></el-input>
+                  <el-input v-model="registerForm.username" placeholder="请输入账号名" ></el-input>
               </el-form-item>
               <el-form-item class="item" label="密码" prop="password">
                   <el-input type="password" v-model="registerForm.password" placeholder="请输入密码"></el-input>
@@ -28,8 +28,8 @@
               <el-form-item class="item" label="确认密码" prop="checkPass">
                   <el-input type="password" v-model="registerForm.checkPass" placeholder="请再次输入密码"></el-input>
               </el-form-item>
-              <el-form-item class="item" label="昵称" prop="nickname">
-                  <el-input v-model="registerForm.nickname" placeholder="请输入昵称"></el-input>
+              <el-form-item class="item" label="姓名" prop="nickname">
+                  <el-input v-model="registerForm.nickname" placeholder="请输入您的真实姓名"></el-input>
               </el-form-item>
               <el-form-item class="item" label="邮箱" prop="email">
                   <el-input v-model="registerForm.email" placeholder="请输入您的电子邮箱"></el-input>
@@ -127,7 +127,7 @@
             { min: 6, message: '密码长度最少六个字符', trigger: 'blur' }
           ],
           nickname: [
-            { required: true, message: '请输入昵称', trigger: 'blur' }
+            { required: true, message: '请输入姓名', trigger: 'blur' }
           ],
           checkPass: [
             { validator: validatePass, trigger: 'blur',required:true }
