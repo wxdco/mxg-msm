@@ -14,10 +14,13 @@
         </el-form>
 
         <el-button class="register" type="success" @click="dialogFormVisible = true">注册</el-button>
-        <el-dialog title="注册" :visible.sync="dialogFormVisible" width="50%" v-if='dialogFormVisible'>
+        <el-dialog title="注册" 
+          :visible.sync="dialogFormVisible"
+          width="50%" v-if='dialogFormVisible' 
+          :close-on-click-modal="false">
             <el-form :model="registerForm" ref="registerForm" :rules="registerRules">
               <el-form-item class="item" label="账号" prop="username">
-                  <el-input v-model="registerForm.username" placeholder="请输入登录账号名"></el-input>
+                  <el-input v-model="registerForm.username" placeholder="请输入登录账号名" ></el-input>
               </el-form-item>
               <el-form-item class="item" label="密码" prop="password">
                   <el-input type="password" v-model="registerForm.password" placeholder="请输入密码"></el-input>
@@ -30,34 +33,43 @@
               </el-form-item>
               <el-form-item class="item" label="邮箱" prop="email">
                   <el-input v-model="registerForm.email" placeholder="请输入您的电子邮箱"></el-input>
-              </el-form-item>
-              <el-form-item class="item" label="验证码" prop="verificationCode">
-                <el-input  placeholder="请输入验证码" ></el-input>
-                <el-button icon="el-icon-s-promotion" class="sendMail" @click="sendEmailCode" style="width: 14%" type="success" :disabled="disabled=!show" >  
+                  <el-button icon="el-icon-s-promotion" class="sendMail" @click="sendEmailCode" style="width: 14%" type="success" :disabled="disabled=!show" >  
                     <span v-show="show">获取验证码</span>
                     <span v-show="!show" class="count">{{count}} s</span>
                 </el-button>
               </el-form-item>
+              <el-form-item class="item" label="验证码" prop="verificationCode">
+                <el-input v-model="registerForm.verificationCode"  placeholder="请输入验证码" ></el-input>
+              </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
-              <el-button type="primary" @click="dialogFormVisible = false">注册</el-button>
+              <el-button type="primary" @click="registerFormSubmit">注册</el-button>
             </div>
         </el-dialog>
     </div>
 </template>
 
 <script>
-  import {login,getUser,checkUser,getEmailCode} from '@/api/login/login'
+  import {login,getUser,checkUser,getEmailCode,registerUser,checkEmailCode} from '@/api/login/login'
+  import md5 from 'md5'
   const TIME_COUNT = 60; //更改倒计时时间
   export default {
     data() {
-      let patter = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
       let isEmail = (rule, value, callback) => {
+        let patter = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
         if (!patter.test(value)) {
           return callback(new Error('请输入正确的电子邮件地址！'))
         } else {
           callback()
         }
+      };
+      let validUsername=(rule,value,callback)=>{
+          let reg=/^[a-zA-Z0-9_-]{4,9}$/
+          if(!reg.test(value)){
+            return callback(new Error('账号必须是由4-9位数字和字母组合'))
+          }else{
+              callback()
+          }
       };
       var validatePass = (rule, value, callback) => {
         if (value === '') {
@@ -107,7 +119,8 @@
           username: [
             { required: true, message: '请输入账户', trigger: 'blur' },
             { min: 3, max: 16, message: '账户长度在 3 到 16 个字符', trigger: 'blur' },
-            { validator: validateUsername, trigger: 'blur' }
+            { validator: validateUsername, trigger: 'blur' },
+            { validator: validUsername, trigger: 'blur' }
           ],
           password: [
             { required: true, message: '请输入密码', trigger: 'blur' },
@@ -158,17 +171,52 @@
           }
         });
       },
+      registerFormSubmit(){
+        this.$refs['registerForm'].validate((valid) => {
+          if (valid) {
+            checkEmailCode(this.registerForm.email,this.registerForm.verificationCode).then(response => {
+              const resp = response.data;
+              if(resp.code === 200){
+                let user = {}
+                user.loginName = this.registerForm.username
+                user.password = md5(this.registerForm.password)
+                user.nickname = this.registerForm.nickname
+                user.email = this.registerForm.email
+                registerUser(user).then(response1 => {
+                  const resp = response1.data;
+                  if(resp.code === 200){
+                    this.dialogFormVisible = false;
+                    this.$message({
+                      message: '注册成功！',
+                      type: 'success'
+                    });
+                  } else {
+                    this.dialogFormVisible = false;
+                    this.$message({
+                      message: '网络异常注册失败！',
+                      type: 'warning'
+                    });  
+                  }
+                }).catch(err => {
+                  console.log(err)
+                })
+              } else {
+                this.$message({
+                      message: '邮箱验证码不正确,请重新获取',
+                      type: 'warning'
+                });
+              }
+            })
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      },
       sendEmailCode(){
         this.$refs['registerForm'].validateField('email',emailError => {
           if(!emailError) {
-              getEmailCode(this.registerForm.email).then(response => {
-                const resp = response.data;
-                if(resp.code === 200){
-                  this.$message({
-                    message: '请查看' + this.registerForm.email + '收件箱,获取验证码。',
-                    type: 'success'
-                  });
-                  if (!this.timer) {
+            if (!this.timer) {
                       this.count = TIME_COUNT;
                       this.show = false;
                       this.timer = setInterval(() => {
@@ -180,7 +228,15 @@
                           this.timer = null;
                         }
                       }, 1000)
-                  }
+              }
+              getEmailCode(this.registerForm.email).then(response => {
+                const resp = response.data;
+                if(resp.code === 200){
+                  this.$message({
+                    message: '请查看' + this.registerForm.email + '收件箱,获取验证码。',
+                    type: 'success'
+                  });
+                  
                 } else {
                   this.$message({
                     message: '发送失败',
@@ -223,5 +279,8 @@
     }
     .sendMail{
       margin-top: 10px;
+    }
+    .dialog-footer{
+      text-align: left;
     }
 </style>

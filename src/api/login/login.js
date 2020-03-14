@@ -12,6 +12,21 @@ export function login(username, password) {
     })
 }
 
+
+export function registerUser(user){
+    return request({
+        url: `/user`,
+        method: 'post',
+        data:{ 
+            loginName : user.loginName,
+            password : user.password,
+            nickName: user.nickname,
+            email : user.email
+        }
+    })
+
+}
+
 export function getUser(token){
     return request({
         url: `/user/info/${token}`,
@@ -42,6 +57,16 @@ export function getEmailCode(email){
         url: `/user/emailCode`,
         params: {
             email
+        },
+        method: 'get',
+    })
+}
+
+export function checkEmailCode(email,emailCode){
+    return request({
+        url: `/user/checkEmailCode`,
+        params: {
+            email,emailCode
         },
         method: 'get',
     })
