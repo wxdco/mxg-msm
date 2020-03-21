@@ -50,7 +50,7 @@
 </template>
 
 <script>
-  import {login,getUser,checkUser,getEmailCode,registerUser,checkEmailCode} from '@/api/login/login'
+  import {login,checkUser,getEmailCode,registerUser,checkEmailCode} from '@/api/login/login'
   import md5 from 'md5'
   const TIME_COUNT = 60; //更改倒计时时间
   export default {
@@ -64,9 +64,9 @@
         }
       };
       let validUsername=(rule,value,callback)=>{
-          let reg=/^[a-zA-Z0-9_-]{4,9}$/
+          let reg=/^[0-9a-zA-Z]*$/g
           if(!reg.test(value)){
-            return callback(new Error('账号必须是由4-9位数字和字母组合'))
+            return callback(new Error('账号必须是字母或数字或其组合'))
           }else{
               callback()
           }
@@ -101,7 +101,7 @@
         rules: {
           username: [
             { required: true, message: '请输入用户名', trigger: 'blur' },
-            { min: 3, max: 9, message: '用户名长度在 3 到 9 个字符', trigger: 'blur' }
+            { min: 3, max: 16, message: '用户名长度在 3 到 16 个字符', trigger: 'blur' }
           ],
           password: [
             { required: true, message: '请输入密码', trigger: 'blur' },
@@ -148,15 +148,12 @@
          this.$refs[formName].validate((valid) => {
           if (valid) {
             //
-            login(this.form.username,this.form.password).then(response => {
+            login(this.form.username,md5(this.form.password)).then(response => {
                   const resp = response.data;
-                  const flag = response.data.flag;
-                  if(flag){
-                    getUser(resp.data.token).then(response => {
-                      localStorage.setItem('hrm-user', JSON.stringify(response.data.data));
-                      localStorage.setItem('hrm-token', resp.data.token)
-                      this.$router.push('/')
-                    })
+                  const code = resp.code;
+                  if(code === 200){
+                    localStorage.setItem('hrm-token', resp.data)
+                    this.$router.push('/')
                   } else {
                     this.$message({
                       message: '用户名或密码不正确',

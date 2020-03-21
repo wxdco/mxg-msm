@@ -3,11 +3,11 @@ import request from '@/utils/request'
 
 export function login(username, password) {
     return request({
-        url: '/user/login',
+        url: `/login`,
         method: 'post',
         data: {
-            username, // username: username
-            password
+            loginName:username,
+            password:password
         }
     })
 }
@@ -15,7 +15,7 @@ export function login(username, password) {
 
 export function registerUser(user){
     return request({
-        url: `/user`,
+        url: `/login/register`,
         method: 'post',
         data:{ 
             loginName : user.loginName,
@@ -27,12 +27,6 @@ export function registerUser(user){
 
 }
 
-export function getUser(token){
-    return request({
-        url: `/user/info/${token}`,
-        method: 'get'
-    })
-}
 
 export function logout(token){
     return request({
@@ -42,9 +36,11 @@ export function logout(token){
     })
 }
 
+
+
 export function checkUser(username){
     return request({
-        url: `/user/exist`,
+        url: `/login/register/exist`,
         params: {
             loginName: username
         },
@@ -54,7 +50,7 @@ export function checkUser(username){
 
 export function getEmailCode(email){
     return request({
-        url: `/user/emailCode`,
+        url: `/login/register/sendEmailCode`,
         params: {
             email
         },
@@ -64,7 +60,7 @@ export function getEmailCode(email){
 
 export function checkEmailCode(email,emailCode){
     return request({
-        url: `/user/checkEmailCode`,
+        url: `/login/register/checkEmailCode`,
         params: {
             email,emailCode
         },

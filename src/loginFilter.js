@@ -1,5 +1,5 @@
 import router from '@/router.js'
-import {getUser} from '@/api/login/login.js'
+import {getUser} from '@/api/user/user.js'
 
 
 
@@ -31,9 +31,9 @@ router.beforeEach((to, from, next) => {
             if(userInfo){
                 next();
             } else {
-                getUser(token).then(response => {
+                getUser().then(response => {
                     const resp = response.data;
-                    if(resp.flag){
+                    if(resp.code == 200){
                         localStorage.setItem("hrm-user",JSON.stringify(resp.data))
                         next();
                     } else {
