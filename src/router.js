@@ -10,7 +10,7 @@ import Performance from './views/performance'
 import Log from './views/log'
 Vue.use(Router);
 
-export default new Router({
+const router =  new Router({
   routes: [
     {
       path: "/login",
@@ -88,3 +88,18 @@ export default new Router({
 
   ]
 });
+
+// 路由守卫
+router.beforeEach((to, from, next) => {
+  // 判断localstorage里面是否有token
+  const isLogin = localStorage.getItem("hrm-token") ? true : false;
+  if(to.path == "/login"){
+    next();
+  }else{
+    // 如果为真，正常跳转，否则跳到登录页面
+    isLogin ? next():next('/login');
+  }
+
+})
+
+export default router;

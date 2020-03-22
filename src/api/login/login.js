@@ -12,6 +12,13 @@ export function login(username, password) {
     })
 }
 
+export function checkToken(){
+    return request({
+        url: `/login/checkToken`,
+        method: 'get',
+    })
+}
+
 
 export function registerUser(user){
     return request({
