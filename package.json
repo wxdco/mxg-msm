@@ -2,7 +2,9 @@
   "name": "hrm",
   "version": "0.1.0",
   "private": true,
+  "main": "main.js",
   "scripts": {
+    "start": "electron .",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
@@ -10,6 +12,7 @@
   "dependencies": {
     "axios": "^0.19.0",
     "core-js": "^3.4.3",
+    "electron": "^9.0.4",
     "element-ui": "^2.13.0",
     "md5": "^2.2.1",
     "pubsub-js": "^1.7.0",
