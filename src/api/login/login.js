@@ -47,10 +47,7 @@ export function logout(token){
 
 export function checkUser(username){
     return request({
-        url: `/login/register/exist`,
-        params: {
-            loginName: username
-        },
+        url: `/login/register/exist/${username}`,
         method: 'get',
     })
 }
